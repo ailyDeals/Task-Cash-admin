@@ -720,6 +720,7 @@
               <button onclick="filterTaskProofs('all')" id="proof-filter-all" class="proof-filter-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 text-xs font-bold">
                 সকল
               </button>
+              <button onclick="cleanupOldProofScreenshots()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-bold hover:bg-rose-500/30 transition-all flex items-center gap-1.5" title="অ্যাপ্রুভড/রিজেক্টেড প্রুফের ভারি ছবি মুছুন"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>পুরোনো ছবি মুছুন</span></button>
               <button onclick="loadAllArchiveTaskProofs()" id="btn-load-archive-proofs" class="px-3 py-1.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 text-xs font-bold hover:bg-indigo-500/30 transition-all flex items-center gap-1.5" title="পুরোনো সকল প্রুফ ডাটাবেজ থেকে লোড করুন">
                 <i data-lucide="archive" class="w-3.5 h-3.5"></i>
                 <span>আর্কাইভ প্রুফ লোড</span>
@@ -882,6 +883,11 @@
               <input type="url" id="set-telegram-url" placeholder="https://t.me/your_channel" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-sky-400 font-mono focus:outline-none focus:border-sky-500">
             </div>
             <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1.5">টেলিগ্রাম মিনি অ্যাপ লিংক (রেফার লিংকের জন্য):</label>
+              <input type="url" id="set-telegram-app-url" placeholder="https://t.me/taskcashpro33_bot/app" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-sky-400 font-mono focus:outline-none focus:border-sky-500">
+              <span class="text-[10px] text-slate-500 mt-0.5 block">রেফার লিংক হবে: এই লিংক + ?startapp=কোড। ফাঁকা রাখলে অ্যাপের ডিফল্ট ব্যবহার হবে।</span>
+            </div>
+            <div>
               <label class="block text-xs font-bold text-slate-300 mb-1.5">অফিশিয়াল ইউটিউব চ্যানেল/ভিডিও গাইড লিংক:</label>
               <input type="url" id="set-youtube-url" placeholder="https://youtube.com/@your_channel" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-rose-400 font-mono focus:outline-none focus:border-rose-500">
             </div>
@@ -974,6 +980,53 @@
                 <label class="block text-xs font-bold text-slate-300 mb-1">টাস্ক নির্দেশনা টেক্সট:</label>
                 <input type="text" id="set-timewall-note" value="টাইমওয়ালে পছন্দের কাজ সম্পন্ন করে একাউন্ট হিস্ট্রি বা কমপ্লিটের স্ক্রিনশট প্রুফ হিসেবে জমা দিন।" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300">
               </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 class="text-sm font-black text-white flex items-center gap-2"><i data-lucide="video" class="w-4 h-4 text-sky-400"></i> TimeWall রিডিম ও চ্যানেল জয়েন সেটিংস</h3>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">সাধারণ ইউজারের ন্যূনতম রিডিম কয়েন:</label>
+              <input type="number" id="set-timewall-min-redeem" min="100" value="1000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-amber-400 font-mono font-bold">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">TimeWall কাজের নিয়ম ভিডিও লিংক (ইউটিউব/টেলিগ্রাম):</label>
+              <input type="url" id="set-timewall-video-url" placeholder="https://youtube.com/watch?v=..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-sky-400 font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">প্রতিবার উইথড্রের জন্য TimeWall থেকে রিডিম (কয়েন):</label>
+              <input type="number" id="set-timewall-withdraw-coins" min="100" value="2000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-amber-400 font-mono font-bold">
+              <span class="text-[10px] text-slate-500 mt-0.5 block">ইউজারের অ্যাপ্রুভড রিডিম জমে এই পরিমাণ হলে একটি উইথড্র আনলক হয়।</span>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">টিম প্রুফ জমার নিয়ম (ইউজারের ফর্মে দেখাবে):</label>
+              <textarea id="set-team-proof-note" rows="3" placeholder="যেমন: ১) TimeWall এ কাজ করে কয়েন রিডিম করুন... ২) ..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white leading-relaxed"></textarea>
+            </div>
+            <div class="p-3 bg-slate-950 rounded-2xl border border-amber-500/30 space-y-2">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="set-cpa-enabled" class="rounded text-amber-600 w-4 h-4">
+                <span class="text-xs font-bold text-amber-300">দৈনিক চেক-ইন বাটনে CPA অফার চালু করুন</span>
+              </label>
+              <input type="url" id="set-cpa-url" placeholder="অফারের আসল গন্তব্য লিংক (https://...)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-sky-400 font-mono">
+              <div class="flex items-center gap-2">
+                <label class="text-[11px] text-slate-300 font-bold">প্রতি ইউজার সর্বোচ্চ কতবার:</label>
+                <input type="number" id="set-cpa-max" min="0" value="2" class="w-20 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white font-mono">
+              </div>
+              <span class="text-[10px] text-slate-500 block">ইউজার চেক-ইন ক্লেইম করলে প্রথম এই কয়েকবার অফার খুলবে এবং "দৈনিক সাইন-ইন বোনাস কয়েন" সরাসরি জমা হবে। লিংক ফাঁকা বা নকল থাকলে অফার খুলবে না।</span>
+            </div>
+            <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800/80">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="set-require-channel-join" checked class="rounded text-sky-600 w-4 h-4">
+                <span class="text-xs font-bold text-sky-300">টেলিগ্রাম চ্যানেলে জয়েন বাধ্যতামূলক (ইউজার নিজে নিশ্চিত করে, অটো যাচাই নয়)</span>
+              </label>
+            </div>
+            <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800/80">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="set-disable-default-tasks" class="rounded text-rose-600 w-4 h-4">
+                <span class="text-xs font-bold text-rose-300">অ্যাপের ৫টি ডিফল্ট টাস্ক লুকান (শুধু আপনার তৈরি টাস্ক দেখাবে)</span>
+              </label>
             </div>
           </div>
 
@@ -1379,7 +1432,7 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
-     const firebaseConfig = {
+    const firebaseConfig = {
           apiKey: "AIzaSyAIe81hhzntDba-XNhF9vI7Cz1bcyJ0mwQ",
           authDomain: "mdjjd-6c072.firebaseapp.com",
           databaseURL: "https://mdjjd-6c072-default-rtdb.firebaseio.com",
@@ -1696,8 +1749,16 @@
       });
 
       // Optimized query: load last 50 proofs to avoid pulling 10MB base64 on entry
-      fbDatabase.ref('taskProofs').limitToLast(50).on('value', (snap) => {
-        adminState.taskProofs = snap.val() || {};
+      const tpRef = fbDatabase.ref('taskProofs').limitToLast(50);
+      const tpSet = (s) => {
+        adminState.taskProofs[s.key] = s.val();
+        markTabDirty('task_proofs');
+        debounceRender('overviewStats', updateOverviewStats, 100);
+      };
+      tpRef.on('child_added', tpSet);
+      tpRef.on('child_changed', tpSet);
+      tpRef.on('child_removed', (s) => {
+        delete adminState.taskProofs[s.key];
         markTabDirty('task_proofs');
         debounceRender('overviewStats', updateOverviewStats, 100);
       });
@@ -3304,6 +3365,46 @@
       renderTaskProofsTable();
     }
 
+    async function cleanupOldProofScreenshots() {
+      if (!isFirebaseReady || !fbDatabase) return alert('Firebase ডাটাবেজ সংযুক্ত নেই!');
+      if (!confirm('অ্যাপ্রুভড ও রিজেক্টেড সব প্রুফের ভারি স্ক্রিনশট ছবি ফায়ারবেস থেকে মুছে ফেলবেন?\n\nরেকর্ড (নাম, ফোন, তারিখ, টাস্ক, স্ট্যাটাস) থেকে যাবে। পেন্ডিং প্রুফ ছোঁয়া হবে না। এটা ফেরানো যাবে না।')) return;
+      showToast('পুরোনো ছবি খোঁজা হচ্ছে...');
+      try {
+        const upd = {};
+        let n = 0;
+        const tp = (await fbDatabase.ref('taskProofs').once('value')).val() || {};
+        Object.entries(tp).forEach(([id, p]) => {
+          if (p && p.screenshotBase64 && !isPendingStatus(p.status)) {
+            upd['taskProofs/' + id + '/screenshotBase64'] = null;
+            upd['taskProofs/' + id + '/screenshotDeleted'] = true;
+            n++;
+          }
+        });
+        const tl = (await fbDatabase.ref('teamDailyReportsList').once('value')).val() || {};
+        Object.entries(tl).forEach(([k, r]) => {
+          if (r && r.screenshotBase64 && !isPendingStatus(r.status)) {
+            upd['teamDailyReportsList/' + k + '/screenshotBase64'] = null;
+            upd['teamDailyReportsList/' + k + '/screenshotDeleted'] = true;
+            if (r.userPhone && r.date) {
+              const base = 'dailyTeamReports/' + sanitizeKey(r.userPhone) + '/' + r.date;
+              upd[base + '/screenshotBase64'] = null;
+              upd[base + '/screenshotDeleted'] = true;
+            }
+            n++;
+          }
+        });
+        const keys = Object.keys(upd);
+        for (let i = 0; i < keys.length; i += 300) {
+          const chunk = {};
+          keys.slice(i, i + 300).forEach(k => { chunk[k] = upd[k]; });
+          await fbDatabase.ref().update(chunk);
+        }
+        showToast('✅ ' + n + 'টি প্রুফের ছবি মুছে ফেলা হয়েছে!');
+      } catch (err) {
+        alert('মুছতে সমস্যা হয়েছে: ' + err.message);
+      }
+    }
+
     function loadAllArchiveTaskProofs() {
       if (!isFirebaseReady || !fbDatabase) return alert('Firebase ডাটাবেজ সংযুক্ত নেই!');
       showToast('আর্কাইভ থেকে সব প্রুফ ডাটা আনা হচ্ছে...');
@@ -3380,7 +3481,7 @@
                 </button>
               </div>
              </div>`
-          : `<span class="text-slate-500 italic text-[11px]">কোনো ছবি নেই</span>`;
+          : (p.screenshotDeleted ? `<span class="text-slate-500 text-[11px]">🗑️ ছবি মুছে ফেলা হয়েছে<br><span class="text-[10px] text-slate-600">(ফায়ারবেস স্থান বাঁচাতে)</span></span>` : `<span class="text-slate-500 italic text-[11px]">কোনো ছবি নেই</span>`);
 
         return `
           <tr class="hover:bg-slate-900/60 transition-colors">
@@ -3445,7 +3546,9 @@
 
       fbDatabase.ref(`taskProofs/${proofId}`).update({
         status: 'approved',
-        reviewedAt: Date.now()
+        reviewedAt: Date.now(),
+        screenshotBase64: null,
+        screenshotDeleted: true
       });
 
       const userPhoneKey = sanitizeKey(p.userPhone);
@@ -3471,9 +3574,14 @@
 
             if (isTimeWall) {
               const currentTw = Number(u.timewallTransfersAvailable || 0);
-              updates.timewallTransfersAvailable = currentTw + 1;
+              const twNeed = Number(adminState.appSettings?.timewallWithdrawCoins || 2000) || 2000;
+              const rc = Number(p.redeemCoins || 0);
+              let unlock = 1, pool = Number(u.timewallRedeemPool || 0);
+              if (rc > 0) { pool += rc; unlock = Math.floor(pool / twNeed); pool -= unlock * twNeed; }
+              updates.timewallRedeemPool = pool;
+              updates.timewallTransfersAvailable = currentTw + unlock;
               updates.timewallTotalApproved = (Number(u.timewallTotalApproved) || 0) + 1;
-              updates.timewallCoinsTransferred = (Number(u.timewallCoinsTransferred) || 0) + (addCoins >= 6000 ? 2000 : 1000);
+              updates.timewallCoinsTransferred = (Number(u.timewallCoinsTransferred) || 0) + (rc > 0 ? rc : twNeed);
             }
 
             fbDatabase.ref(`users/${userPhoneKey}`).update(updates);
@@ -3512,7 +3620,9 @@
       fbDatabase.ref(`taskProofs/${proofId}`).update({
         status: 'rejected',
         rejectReason: reason,
-        reviewedAt: Date.now()
+        reviewedAt: Date.now(),
+        screenshotBase64: null,
+        screenshotDeleted: true
       });
 
       showToast('টাস্ক প্রুফ বাতিল করা হয়েছে!');
@@ -3525,6 +3635,8 @@
 
       const tg = document.getElementById('set-telegram-url');
       if (tg) tg.value = s.telegramUrl || 'https://t.me/taskcashpro';
+      const tgApp = document.getElementById('set-telegram-app-url');
+      if (tgApp) tgApp.value = s.telegramAppUrl || '';
 
       const yt = document.getElementById('set-youtube-url');
       if (yt) yt.value = s.youtubeUrl || '';
@@ -3579,6 +3691,15 @@
 
       const twNote = document.getElementById('set-timewall-note');
       if (twNote) twNote.value = s.timewallNote || 'টাইমওয়ালে পছন্দের কাজ সম্পন্ন করে একাউন্ট হিস্ট্রি বা কমপ্লিটের স্ক্রিনশট প্রুফ হিসেবে জমা দিন।';
+      if (document.getElementById('set-timewall-min-redeem')) document.getElementById('set-timewall-min-redeem').value = s.timewallMinRedeem || 1000;
+      if (document.getElementById('set-timewall-video-url')) document.getElementById('set-timewall-video-url').value = s.timewallVideoUrl || '';
+      if (document.getElementById('set-require-channel-join')) document.getElementById('set-require-channel-join').checked = s.requireChannelJoin !== false;
+      if (document.getElementById('set-disable-default-tasks')) document.getElementById('set-disable-default-tasks').checked = !!s.disableDefaultTasks;
+      if (document.getElementById('set-timewall-withdraw-coins')) document.getElementById('set-timewall-withdraw-coins').value = s.timewallWithdrawCoins || 2000;
+      if (document.getElementById('set-team-proof-note')) document.getElementById('set-team-proof-note').value = s.teamProofNote || '';
+      if (document.getElementById('set-cpa-enabled')) document.getElementById('set-cpa-enabled').checked = !!s.cpaOfferEnabled;
+      if (document.getElementById('set-cpa-url')) document.getElementById('set-cpa-url').value = s.cpaOfferUrl || '';
+      if (document.getElementById('set-cpa-max')) document.getElementById('set-cpa-max').value = s.cpaOfferMaxPerUser == null ? 2 : s.cpaOfferMaxPerUser;
 
       if (document.getElementById('set-reward-unlock-extra')) document.getElementById('set-reward-unlock-extra').value = s.rewardUnlockExtra ?? 200;
       if (document.getElementById('set-reward-watch-ad')) document.getElementById('set-reward-watch-ad').value = s.rewardWatchAd ?? 200;
@@ -3607,6 +3728,7 @@
       const settingsData = {
         marqueeNotice: document.getElementById('set-marquee-notice').value.trim(),
         telegramUrl: document.getElementById('set-telegram-url').value.trim(),
+        telegramAppUrl: (document.getElementById('set-telegram-app-url')?.value || '').trim(),
         youtubeUrl: (document.getElementById('set-youtube-url')?.value || '').trim(),
         facebookUrl: document.getElementById('set-facebook-url').value.trim(),
         coinsPerBdt: Number(document.getElementById('set-coins-per-bdt').value) || 100,
@@ -3621,6 +3743,15 @@
         timewallUrl: document.getElementById('set-timewall-url').value.trim() || 'https://timewall.io/users/login?oid=313799dd4a037d52&uid={UID}&tab=tasks',
         timewallReward: Number(document.getElementById('set-timewall-reward').value) || 150,
         timewallNote: document.getElementById('set-timewall-note').value.trim(),
+        timewallMinRedeem: Number(document.getElementById('set-timewall-min-redeem')?.value) || 1000,
+        timewallVideoUrl: (document.getElementById('set-timewall-video-url')?.value || '').trim(),
+        requireChannelJoin: document.getElementById('set-require-channel-join')?.checked !== false,
+        disableDefaultTasks: !!document.getElementById('set-disable-default-tasks')?.checked,
+        timewallWithdrawCoins: Number(document.getElementById('set-timewall-withdraw-coins')?.value) || 2000,
+        teamProofNote: (document.getElementById('set-team-proof-note')?.value || '').trim(),
+        cpaOfferEnabled: !!document.getElementById('set-cpa-enabled')?.checked,
+        cpaOfferUrl: (document.getElementById('set-cpa-url')?.value || '').trim(),
+        cpaOfferMaxPerUser: Math.max(0, Number(document.getElementById('set-cpa-max')?.value) || 0),
         dailySpinsLimit: Number(document.getElementById('set-daily-spins').value) || 50,
         dailyScratchLimit: Number(document.getElementById('set-daily-scratch').value) || 50,
         dailyCaptchaLimit: Number(document.getElementById('set-daily-captcha').value) || 50,
@@ -3791,7 +3922,7 @@
           const statusBadge = r.status === 'approved' ? '<span class="text-emerald-400 font-bold">অ্যাপ্রুভড</span>' :
             r.status === 'rejected' ? '<span class="text-rose-400 font-bold">রিজেক্ট</span>' :
             '<span class="text-amber-400 font-bold">পেন্ডিং</span>';
-          const img = r.screenshotBase64 ? `<img src="${r.screenshotBase64}" class="w-14 h-14 object-cover rounded-lg border border-slate-700 cursor-pointer" onclick="window.open(this.src)">` : '';
+          const img = r.screenshotBase64 ? `<img src="${r.screenshotBase64}" class="w-20 h-20 object-cover rounded-lg border border-slate-700 cursor-pointer" onclick="tlViewProof('${r.userPhone}','${r.date}')">` : '';
           return `<div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row gap-3">
             <div class="shrink-0">${img}</div>
             <div class="flex-1 min-w-0">
@@ -3815,8 +3946,8 @@
       const userKey = sanitizeKey(userPhone);
       const rewardCoins = Number(adminState.appSettings?.teamMemberProofRewardCoins || 300);
 
-      fbDatabase.ref('teamDailyReportsList/' + listKey).update({ status: 'approved', reviewedAt: Date.now(), rewardCoins: rewardCoins });
-      fbDatabase.ref('dailyTeamReports/' + userKey + '/' + date).update({ status: 'approved', reviewedAt: Date.now(), rewardCoins: rewardCoins });
+      fbDatabase.ref('teamDailyReportsList/' + listKey).update({ status: 'approved', reviewedAt: Date.now(), rewardCoins: rewardCoins, screenshotBase64: null, screenshotDeleted: true });
+      fbDatabase.ref('dailyTeamReports/' + userKey + '/' + date).update({ status: 'approved', reviewedAt: Date.now(), rewardCoins: rewardCoins, screenshotBase64: null, screenshotDeleted: true });
       fbDatabase.ref('teamReportIndex/' + userKey + '/' + date).set({ status: 'approved', coins: rewardCoins });
 
       // Award coins to user wallet
@@ -3851,8 +3982,8 @@
       const reason = prompt('রিজেক্টের কারণ:', 'স্ক্রিনশট স্পষ্ট নয়');
       if (reason === null) return;
       const userKey = sanitizeKey(userPhone);
-      fbDatabase.ref('teamDailyReportsList/' + listKey).update({ status: 'rejected', rejectReason: reason, reviewedAt: Date.now() });
-      fbDatabase.ref('dailyTeamReports/' + userKey + '/' + date).update({ status: 'rejected', rejectReason: reason, reviewedAt: Date.now() });
+      fbDatabase.ref('teamDailyReportsList/' + listKey).update({ status: 'rejected', rejectReason: reason, reviewedAt: Date.now(), screenshotBase64: null, screenshotDeleted: true });
+      fbDatabase.ref('dailyTeamReports/' + userKey + '/' + date).update({ status: 'rejected', rejectReason: reason, reviewedAt: Date.now(), screenshotBase64: null, screenshotDeleted: true });
       fbDatabase.ref('teamReportIndex/' + userKey + '/' + date).set({ status: 'rejected' });
       showToast('প্রুফ রিজেক্ট করা হয়েছে');
       loadAdminTeamReports();
@@ -3890,7 +4021,7 @@
               <div class="text-[11px] text-slate-400">লিডার: ${t.leaderName || ''} (${t.leaderPhone}) · পেমেন্ট নম্বর: <span class="text-emerald-400 font-mono font-bold">${t.paymentNumber || '—'}</span></div>
             </div>
             <div class="text-[11px] sm:text-right space-y-0.5">
-              <div class="text-slate-300">মেম্বার: <b>${mk.length}/${t.maxMembers || 10}</b></div>
+              <div class="text-slate-300">মেম্বার: <b>${mk.length}/${Number(st.teamMaxMembers || 10)}</b></div>
               <div>স্ল্যাব: <b class="text-emerald-400">${tier ? tier.members + '+ জন' : 'নেই (মেম্বার কম)'}</b> · মাসিক <b class="text-amber-400">৳${tier ? tier.monthly : 0}</b> · ৭ দিনে <b class="text-emerald-400">৳${tier ? tier.weekly : 0}</b></div>
             </div>
           </div>
@@ -3907,9 +4038,10 @@
               ${cur.rows.map(r => `<tr>
                 <td class="p-2"><div class="font-bold text-white">${r.name} ${r.isLeader ? '<span class="text-indigo-400">(লিডার)</span>' : ''}</div><div class="text-slate-400 font-mono">${r.phone}</div></td>
                 <td class="p-2">${tlBadge(r.todayStatus)}</td>
-                <td class="p-2"><div class="flex gap-1">${tlDots(r)}</div></td>
+                <td class="p-2"><div class="flex gap-1">${tlDotsA(r)}</div></td>
                 <td class="p-2 font-mono text-slate-300">${r.weekApproved}/৭ · ${r.monthApproved} দিন${r.missed ? ' <span class="text-rose-400">মিস ' + r.missed + '</span>' : ''}</td>
                 <td class="p-2 text-right whitespace-nowrap space-x-1">
+                  ${r.todayStatus ? `<button onclick="tlViewProof('${r.phone}','${today}')" class="px-2 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded-lg font-bold">📸 স্ক্রিনশট</button>` : ''}
                   ${r.todayStatus === 'pending' ? `<button onclick="tlAdminSetReport('${r.phone}','${today}','approved')" class="px-2 py-1 bg-emerald-600 text-white rounded-lg font-bold">অ্যাপ্রুভ</button><button onclick="tlAdminSetReport('${r.phone}','${today}','rejected')" class="px-2 py-1 bg-rose-600 text-white rounded-lg font-bold">রিজেক্ট</button>` : ''}
                   ${!r.isLeader ? `<button onclick="removeTeamMember('${t.id}','${r.key}')" class="px-2 py-1 bg-slate-800 text-rose-300 rounded-lg font-bold">সরান</button>` : ''}
                 </td></tr>`).join('')}
@@ -3941,6 +4073,50 @@
       }).join('');
       el.innerHTML = cards.join('');
       scheduleLucideIcons(el);
+    }
+
+    function tlDotsA(m){return m.dots.map(x=>`<span title="${x.d}${x.st?' — ছবি দেখতে ক্লিক করুন':''}" ${x.st?`onclick="tlViewProof('${m.phone}','${x.d}')"`:''} class="w-3.5 h-3.5 rounded-full inline-block ${x.st?'cursor-pointer ring-1 ring-white/20':''} ${x.st==='approved'?'bg-emerald-500':x.st==='pending'?'bg-amber-400':x.st==='rejected'?'bg-rose-500':x.future?'bg-slate-400/40':'bg-rose-900/60'}"></span>`).join('');}
+
+    let tlProofZoom = 1;
+    async function tlViewProof(phone, date) {
+      if (!isFirebaseReady || !fbDatabase) return;
+      const uk = sanitizeKey(phone);
+      let m = document.getElementById('modal-tl-proof');
+      if (!m) {
+        m = document.createElement('div');
+        m.id = 'modal-tl-proof';
+        m.className = 'fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 z-[60]';
+        document.body.appendChild(m);
+      }
+      m.classList.remove('hidden');
+      m.innerHTML = '<div class="text-slate-300 text-sm">ছবি লোড হচ্ছে...</div>';
+      const r = (await fbDatabase.ref('dailyTeamReports/' + uk + '/' + date).once('value')).val();
+      if (!r) { m.innerHTML = '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-3"><div class="text-slate-300 text-sm">এই তারিখে (' + date + ') কোনো প্রুফ জমা নেই</div><button onclick="document.getElementById(\'modal-tl-proof\').classList.add(\'hidden\')" class="px-4 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold">বন্ধ করুন</button></div>'; return; }
+      tlProofZoom = 1;
+      const st = r.status || 'pending';
+      const stTxt = st === 'approved' ? '✅ অ্যাপ্রুভড' : st === 'rejected' ? '❌ রিজেক্টেড' : '⏳ পেন্ডিং';
+      m.innerHTML = `
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 max-w-3xl w-full max-h-[94vh] flex flex-col gap-3">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="font-black text-white text-sm">${r.userName || ''} ${r.isLeader ? '<span class="text-indigo-400 text-xs">(লিডার)</span>' : ''}</div>
+              <div class="text-[11px] text-slate-400 font-mono">${r.userPhone} · ${date} · রিডিম টার্গেট: ${r.coins || 0} কয়েন${r.redeemId ? ' · <span class="text-amber-300">Redeem ID: ' + r.redeemId + ' · রিডিম: ' + (r.redeemCoins || 0) + '</span>' : ''}</div>
+              <div class="text-xs font-bold mt-0.5">${stTxt}${r.rejectReason ? ' — ' + r.rejectReason : ''}</div>
+            </div>
+            <button onclick="document.getElementById('modal-tl-proof').classList.add('hidden')" class="p-2 rounded-full bg-slate-800 text-slate-300 hover:text-white">✕</button>
+          </div>
+          <div class="flex-1 overflow-auto rounded-2xl bg-slate-950 border border-slate-800 p-2 flex items-start justify-center min-h-[250px]">
+            ${r.screenshotBase64 ? `<img id="tl-proof-img" src="${r.screenshotBase64}" class="max-w-full rounded-xl transition-transform duration-200 cursor-zoom-in origin-top" onclick="tlProofZoom=tlProofZoom>1?1:1.8;this.style.transform='scale('+tlProofZoom+')'">` : (r.screenshotDeleted ? '<div class="text-slate-400 text-sm py-10 text-center">🗑️ স্ক্রিনশট মুছে ফেলা হয়েছে (ফায়ারবেস স্থান বাঁচাতে)।<br>রেকর্ড (নাম, ফোন, তারিখ, স্ট্যাটাস) থেকে গেছে।</div>' : '<div class="text-slate-500 text-sm py-10">স্ক্রিনশট নেই</div>')}
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <a href="${r.screenshotBase64 || '#'}" download="proof_${r.userPhone}_${date}.jpg" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold">⬇ ডাউনলোড</a>
+            <div class="flex gap-2">
+              ${st === 'pending' ? `
+                <button onclick="tlAdminSetReport('${r.userPhone}','${date}','approved');document.getElementById('modal-tl-proof').classList.add('hidden')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold">অ্যাপ্রুভ</button>
+                <button onclick="tlAdminSetReport('${r.userPhone}','${date}','rejected');document.getElementById('modal-tl-proof').classList.add('hidden')" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold">রিজেক্ট</button>` : ''}
+            </div>
+          </div>
+        </div>`;
     }
 
     function tlAdminSetReport(phone, date, action) {
